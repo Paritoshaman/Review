@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rate & Get Rewards</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
+
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl p-6 text-center">
+        <!-- Business Header -->
+        <h1 class="text-2xl font-bold text-slate-800 mb-1">Sharma Dental Clinic</h1>
+        <p class="text-slate-500 text-sm mb-6">How was your visit today?</p>
+
+        <!-- Step 1: Star Rating -->
+        <div id="star-box" class="flex justify-center space-x-2 mb-6">
+            <button onclick="rate(1)" class="text-4xl text-slate-300 hover:text-amber-400">★</button>
+            <button onclick="rate(2)" class="text-4xl text-slate-300 hover:text-amber-400">★</button>
+            <button onclick="rate(3)" class="text-4xl text-slate-300 hover:text-amber-400">★</button>
+            <button onclick="rate(4)" class="text-4xl text-slate-300 hover:text-amber-400">★</button>
+            <button onclick="rate(5)" class="text-4xl text-slate-300 hover:text-amber-400">★</button>
+        </div>
+
+        <!-- Step 2: Lead Capture Form (Hidden initially) -->
+        <div id="lead-form" class="hidden space-y-3 mb-4 text-left">
+            <label class="text-xs font-semibold text-slate-600">Enter your details to unlock:</label>
+            <input type="text" id="c-name" placeholder="Your Name" class="w-full px-3 py-2 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+            <input type="tel" id="c-phone" placeholder="WhatsApp Number" class="w-full px-3 py-2 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+            <button onclick="submitLead()" class="w-full bg-blue-600 text-white font-bold py-2.5 rounded-xl shadow hover:bg-blue-700 transition">Continue</button>
+        </div>
+
+        <!-- Step 3: Result Area (Happy vs Unhappy) -->
+        <div id="result-area" class="hidden"></div>
+    </div>
+
+    <script>
+        let selectedStars = 0;
+
+        function rate(stars) {
+            selectedStars = stars;
+            // Highlight stars
+            const buttons = document.querySelectorAll('#star-box button');
+            buttons.forEach((b, i) => {
+                b.className = i < stars ? 'text-4xl text-amber-400' : 'text-4xl text-slate-300';
+            });
+            // Show lead form
+            document.getElementById('lead-form').classList.remove('hidden');
+        }
+
+        function submitLead() {
+            const name = document.getElementById('c-name').value;
+            const phone = document.getElementById('c-phone').value;
+
+            if(!phone || phone.length < 10) {
+                alert('Please enter a valid WhatsApp number');
+                return;
+            }
+
+            // (Optional) You can send this lead data directly to your WhatsApp using a fetch request or mailto, but keep it local for now!
+            
+            document.getElementById('lead-form').classList.add('hidden');
+            const result = document.getElementById('result-area');
+            result.classList.remove('hidden');
+
+            if (selectedStars >= 4) {
+                // HAPPY FLOW: 1-Tap Copy & Google Maps Redirect
+                result.innerHTML = `
+                    <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl">
+                        <p class="text-emerald-800 text-sm font-medium mb-3">Thank you! Click below to copy our review and drop it on Google:</p>
+                        <button onclick="copyAndGo()" class="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl shadow hover:bg-emerald-700 transition">Copy Review & Open Google</button>
+                    </div>
+                `;
+            } else {
+                // UNHAPPY FLOW: Private Complaint Shield
+                result.innerHTML = `
+                    <div class="bg-rose-50 border border-rose-200 p-4 rounded-xl">
+                        <p class="text-rose-800 text-sm font-medium">We are truly sorry! We have notified the clinic owner directly on WhatsApp to fix this for you immediately.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function copyAndGo() {
+            const reviewText = "Best dental clinic in town! Extremely clean and painless treatment.";
+            navigator.clipboard.writeText(reviewText);
+            alert("Review copied! Now pasting to Google Maps...");
+            // Replace with your client's actual Google Place Review Link
+            window.location.href = "https://search.google.com/local/writereview?placeid=ChIJi3w2...YOUR_PLACE_ID";
+        }
+    </script>
+</body>
+</html>
